@@ -22,3 +22,5 @@ Finally, the change log for the template can be found here:
 
 <!-- 코멘트 by Joon -->
 <!-- 코멘트 by Joon -->
+<!-- HI -->
+<!-- Comment by Joon -->
