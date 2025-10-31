@@ -21,3 +21,4 @@ Finally, the change log for the template can be found here:
   * https://github.com/seangtkelley/241C-Competition-Code/blob/master/README.md?plain=1
 
 <!-- 코멘트 by Joon -->
+<!-- 코멘트 by Joon -->
