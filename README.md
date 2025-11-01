@@ -19,6 +19,7 @@ Finally, the change log for the template can be found here:
 
 #### References:
   * https://github.com/seangtkelley/241C-Competition-Code/blob/master/README.md?plain=1
+  * https://lemlib.readthedocs.io/en/stable/tutorials/1_getting_started.html
 
 <!-- 코멘트 by Joon -->
 <!-- 코멘트 by Joon -->
