@@ -1,20 +1,29 @@
 #include "main.h"
+#include "control.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/misc.h"
+#include "pros/motors.hpp"
+
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // left motor group
 pros::MotorGroup left_motor_group({-1, -2}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motor_group({3, 4}, pros::MotorGears::blue);
+pros::MotorGroup right_motor_group({17, 18}, pros::MotorGears::blue);
 
-//Intake motors
-//pros:Motor Intake(13, pros::v5::MotorGears::green) <- 5.5w motor
+//Intake/Outtake motors
+pros::Motor intake1(19, pros::v5::MotorGears::green);
+pros::Motor intake2(20, pros::v5::MotorGears::green);
+pros::Motor conveyer3(8, pros::v5::MotorGears::green);
+pros::Motor outtake4(4, pros::v5::MotorGears::green);
+pros::Motor outtake5(3, pros::v5::MotorGears::green);
+pros::Motor intake6(11, pros::v5::MotorGears::green);
 
-pros::Imu imu(11);
+pros::Imu imu(5);
 
-pros::Rotation verticalEnc(12);
-pros::Rotation horizontalEnc(13);
+pros::Rotation verticalEnc(6);
+pros::Rotation horizontalEnc(7);
 
 lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_2, 0);
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_2, 0);
@@ -71,8 +80,6 @@ lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
 );
 
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sensors, &throttle_curve, &steer_curve);
-
-pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 /**
  * A callback function for LLEMU's center button.
@@ -162,13 +169,7 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 	while (true) {
-        // get left y and right y positions
-        int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-        int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-
-        // move the robot
-        chassis.tank(leftY, rightY);
-
+        Control::opupdate();
         // delay to save resources
         pros::delay(25);
 	}
