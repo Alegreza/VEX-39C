@@ -20,3 +20,4 @@ Finally, the change log for the template can be found here:
 #### References:
   * https://github.com/seangtkelley/241C-Competition-Code/blob/master/README.md?plain=1
   * https://lemlib.readthedocs.io/en/stable/tutorials/1_getting_started.html
+  * https://github.com/xzliu380/CK-Robotics-Software-Boilerplate-Code/tree/main
