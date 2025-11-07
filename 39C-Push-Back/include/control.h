@@ -13,4 +13,5 @@ class Control{
         static void tankLemlibDrive();
         static void tankDrive();
         static void arcadeDrive();
+        static void directionarcadeDrive(int direction);
 };
