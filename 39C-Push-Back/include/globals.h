@@ -22,4 +22,4 @@ extern lemlib::Chassis chassis;
 extern pros::Optical optical;
 
 extern bool teamRed;
-extern bool scoringLow;
+extern int move; //give +1 or -1, so that they can change the direction easily
