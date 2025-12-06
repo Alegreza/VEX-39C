@@ -1,5 +1,6 @@
+#include "control.h"
+#include "globals.h"
 #include "main.h"
-#include "pros/motors.h"
 
 void Control::opinit() {
     //controller
@@ -43,12 +44,20 @@ void Control::tankDrive(){
     rightDrive.move_velocity(right*600);
 }
 
-void Control::tankLemlibDrive(){
+void Control::tankLemlibDrive() {
     // get left y and right y positions. For this control, drive speed does not scale linearly with joystick position (there is a control function)
     int leftY = controller.get_analog(ANALOG_LEFT_Y);
     int rightY = controller.get_analog(ANALOG_RIGHT_Y);
 
     chassis.tank(leftY, rightY);
+    pros::delay(25);
+}
+
+void Control::directiontankdrive(int direction) {
+    int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+
+    chassis.tank(direction * leftY, direction * rightY);
     pros::delay(25);
 }
 
@@ -85,6 +94,39 @@ void Control::arcadeDrive(){
         DriveTrain::stopRight();
     }
     */
+}
+
+void Control::curvatureDrive() {
+            // get left y and right x positions
+        int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+        // move the robot
+        chassis.curvature(leftY, rightX);
+
+        // delay to save resources
+        pros::delay(25);
+}
+
+void Control::lemlibarcadeDrive(int direction) {
+        // get left y and right x positions
+        float leftY = move * controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        float rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+        // move the robot
+        chassis.arcade( leftY, rightX);
+}
+
+void Control::directionlemlibsinglstickarcadeDrive(int direction) {
+    // get left y and right x positions
+        float leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        float leftX = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+
+        // move the robot
+        chassis.arcade(direction * leftY, direction * leftX);
+
+        // delay to save resources
+        pros::delay(25);
 }
 
 void Control::directionarcadeDrive(int direction) {
@@ -136,50 +178,41 @@ Outtake low -> 1 - 2 - 3 - 6 +
 ** 체크해야 할 상황 => convey 돌리다가 low로 배출 가능할지 **
 */
 
-void Control::controls(){
+void Control::controls() {
 
-    //intake
-    /*
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1 )) {          //intake to low
-        intake1.move_voltage(12000);
-        intake2.move_voltage(12000);
-        conveyer3.move_voltage(12000);
-        intake6.move_voltage(-12000);
-    } else
-    */
+         //outtake
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {      // intake to high
         intake1.move_voltage(12000);
-        intake2.move_voltage(-12000);
-        conveyer3.move_voltage(-12000);
-        intake6.move_voltage(12000);
-    } else {
-        intake1.move_voltage(0);
-        intake2.move_voltage(0);
-        conveyer3.move_voltage(0);
-        intake6.move_voltage(0);
+         intake2.move_voltage(-12000);
+         conveyer3.move_voltage(-12000);
+         intake6.move_voltage(12000);
+     } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {           // outtake to low
+         intake1.move_voltage(-12000);
+         intake2.move_voltage(-12000);
+         conveyer3.move_voltage(-12000);
+         intake6.move_voltage(12000);
+     } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {    // outtake to high
+         conveyer3.move_voltage(-12000);
+         outtake4.move_voltage(-12000);
+         outtake5.move_voltage(12000);
+     } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {    //outtake to mid
+         conveyer3.move_voltage(12000);
+         outtake5.move_voltage(-12000);
+     } else {
+         intake1.move_voltage(0);
+         intake2.move_voltage(0);
+         conveyer3.move_voltage(0);
+         intake6.move_voltage(0);
+         outtake4.move_voltage(0);
+         outtake5.move_voltage(0);
     }
 
-    //outtake
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {           // outtake to low
-        intake1.move_voltage(-12000);
-        intake2.move_voltage(-12000);
-        conveyer3.move_voltage(-12000);
-        intake6.move_voltage(12000);
-    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {    // outtake to high
-        conveyer3.move_voltage(-12000);
-        outtake4.move_voltage(-12000);
-        outtake5.move_voltage(12000);
-    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {    //outtake to mid
-        conveyer3.move_voltage(12000);
-        outtake5.move_voltage(-12000);
-    } else {
-        outtake4.move_voltage(0);
-        outtake5.move_voltage(0);
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+        matchload.set_value(true);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+        matchload.set_value(false);
     }
 
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-        move = -1 * move;
-    }
 
 }
 
@@ -190,6 +223,12 @@ void Control::debug(){
 }
 
 void Control::opupdate(){
-    Control::directionarcadeDrive(move);
+    //Control::directionarcadeDrive(move);
+    Control::lemlibarcadeDrive(move);
+    //Control::tankLemlibDrive();
+    //Control::directiontankdrive(move);
+    //Control::directionlemlibsinglstickarcadeDrive(move);
+    //Control::curvatureDrive();
     Control::controls();
+    
 }

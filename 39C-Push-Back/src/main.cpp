@@ -1,4 +1,5 @@
 #include "main.h"
+#include "globals.h"
 #include "control.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "pros/misc.h"
@@ -28,18 +29,30 @@ void on_center_button() {
 // initialize function. Runs on program startup
 void initialize() {
     pros::lcd::initialize(); // initialize brain screen
-    chassis.calibrate(); // calibrate sensors
-    // print position to brain screen
-    pros::Task screen_task([&]() {
-        while (true) {
-            // print robot location to the brain screen
-            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-            // delay to save resources
-            pros::delay(20);
-        }
-    });
+    inertial.reset(true);
+    inertial.tare();
+    while (inertial.is_calibrating()) {
+        pros::delay(10);
+        pros::lcd::print(0, "calibrating");
+    }
+    chassis.calibrate();
+    chassis.setPose({0,0,0});
+    // optical.set_led_pwm(100); <--optical sensor (will be put in later)
+    pros::Task printPoseTask(Autonomous::constantlyPrintPose);  //multithreading: constantly print position, seperate from main code.*/
+
+    // chassis.calibrate(); // calibrate sensors
+
+    // // print position to brain screen
+    // pros::Task screen_task([&]() {
+    //     while (true) {
+    //         // print robot location to the brain screen
+    //         pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
+    //         pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
+    //         pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+    //         // delay to save resources
+    //         pros::delay(20);
+    //     }
+    // });
 }
 
 
@@ -72,7 +85,13 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+    Autonomous::init();
+    matchload.set_value(true);
+    //Autonomous::tuneAngularPID();
+    //Autonomous::tuneLateralPID();
+    Autonomous::skillsAuton();
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -89,6 +108,7 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
+    matchload.set_value(true);
 
 	while (true) {
         Control::opupdate();

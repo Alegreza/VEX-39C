@@ -1,4 +1,6 @@
+#include "globals.h"
 #include "main.h"
+#include "pros/abstract_motor.hpp"
 
 const int UNDEF = 50;
 //controller
@@ -11,18 +13,23 @@ pros::MotorGroup right_motor_group({17, 18}, pros::MotorGears::blue);
 //Intake/Outtake motors
 pros::Motor intake1(19, pros::v5::MotorGears::green);
 pros::Motor intake2(20, pros::v5::MotorGears::green);
-pros::Motor conveyer3(8, pros::v5::MotorGears::green);
+pros::Motor conveyer3(8, pros::v5::MotorGears::blue);
 pros::Motor outtake4(4, pros::v5::MotorGears::green);
 pros::Motor outtake5(3, pros::v5::MotorGears::green);
 pros::Motor intake6(11, pros::v5::MotorGears::green);
+pros::Motor flap7(10, pros::v5::MotorGears::green);
 
-pros::Imu imu(5);
+pros::Imu inertial(12);
 
-pros::Rotation verticalEnc(6);
-pros::Rotation horizontalEnc(7);
+pros::Rotation verticalEnc(-7);
+pros::Rotation horizontalEnc(-5);
 
-lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_2, 0);
-lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_2, 0);
+pros::ADIDigitalOut matchload('D',false);
+
+
+
+lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_2, 8.5);
+lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_2, 0.5);
 
 //global vars
 bool teamRed = true;
@@ -36,10 +43,8 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               360, // drivetrain rpm is 360 since the gear ratio is 1:0.6
                               2 // horizontal drift is 2 (for now) <--need to be changed
 );
-lemlib::TrackingWheel verticalOdomWheel(&odom, lemlib::Omniwheel::NEW_275, 0.75); // senser
-lemlib::TrackingWheel horizontalOdomWheel(&odom, lemlib::Omniwheel::NEW_275, 0.75);
 
-lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(3, // proportional gain (kP)
                                               0.0001, // integral gain (kI)
                                               10, // derivative gain (kD)
                                               3, // anti windup
@@ -66,7 +71,7 @@ lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
                             &horizontal, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
-                            &imu // inertial sensor
+                            &inertial // in ertial sensor
 );
 
 // input curve for throttle input during driver control

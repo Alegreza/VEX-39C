@@ -19,3 +19,10 @@
     - Port assignment to sensors
     - Make code more beautiful
     - Commenting on codes
+
+## V1.2
+- Finally made PID Work
+    - I'm still not sure what was the problem, but it worked
+- Adding intake pneumatics
+- Adding other drive options
+- Fixing minor bugs
