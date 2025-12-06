@@ -12,6 +12,10 @@ class Control{
         static void controls();
         static void tankLemlibDrive();
         static void tankDrive();
+        static void directiontankdrive(int direction);
         static void arcadeDrive();
+        static void lemlibarcadeDrive(int direction);
         static void directionarcadeDrive(int direction);
+        static void directionlemlibsinglstickarcadeDrive(int direction);
+        static void curvatureDrive();
 };
