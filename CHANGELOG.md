@@ -26,3 +26,9 @@
 - Adding intake pneumatics
 - Adding other drive options
 - Fixing minor bugs
+
+## V2.0
+- New robot + OG Code
+    - Split Drive and Skill
+        - Made drive work, but didn't configure settings for skill
+    - Few Pneumatics Addition
